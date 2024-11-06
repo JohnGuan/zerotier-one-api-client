@@ -1,0 +1,66 @@
+name: typescript-axios
+
+on:
+  workflow_dispatch:
+  # schedule:
+  #   - cron: '0 0 * * *' # every day at 00:00 UTC
+
+env:
+  npmName: zerotier-one-client-ts-axios
+  gitUserId: JohnGuan
+  gitRepoId: zerotier-one-api-client
+  generator: typescript-axios
+
+jobs:
+  main:
+    name: Generate, build and publish
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v4
+
+    - name: Call download-api-spec workflow
+      id: download-api-spec
+      uses: ./.github/workflows/download-api-spec.yml
+
+    - name: Decode spec file content
+      id: decode-spec
+      run: |
+        echo "${{ steps.download-api-spec.outputs.spec-file-content-base64 }}" | base64 -d > ${{ steps.download-api-spec.outputs.spec-file-name }}
+    
+    - name: Setup Node
+      uses: actions/setup-node@v3
+      with:
+        node-version: lts
+        registry-url: 'https://registry.npmjs.org'
+    
+    - name: Setup openapi-generator-cli
+      run: |
+        npm install @openapitools/openapi-generator-cli -g
+        
+    - name: Generate
+      run: |
+        npx openapi-generator-cli generate \
+          -i ${{ steps.download-api-spec.outputs.spec-file-name }} \
+          -g ${{ env.generator }} \
+          -o ${{ env.npmName }} \
+          --additional-properties=npmName=${{ env.npmName }} \
+          --git-user-id ${{ env.gitUserId }} \
+          --git-repo-id ${{ env.gitRepoId }} \
+          
+        cat GENERATED_DOC_TIPS.md ${{ env.npmName }}/README.md > tmp.md && mv tmp.md ${{ env.npmName }}/README.md
+        
+    - name: Build
+      run: |
+        npm install
+        npm run build
+      working-directory: zerotierone-api-ts-axios
+    
+    - name: Publish
+      run: |
+        npm publish
+      working-directory: zerotierone-api-ts-axios
+      env:
+        NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
+        
+
+      
