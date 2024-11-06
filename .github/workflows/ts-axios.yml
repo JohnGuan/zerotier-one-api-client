@@ -53,12 +53,12 @@ jobs:
       run: |
         npm install
         npm run build
-      working-directory: zerotierone-api-ts-axios
+      working-directory: ${{ env.npmName }}
     
     - name: Publish
       run: |
         npm publish
-      working-directory: zerotierone-api-ts-axios
+      working-directory: ${{ env.npmName }}
       env:
         NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
         

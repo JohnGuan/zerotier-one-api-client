@@ -49,7 +49,7 @@ jobs:
           echo "spec-file-name=${{ env.spec-file-name }}" >> "$GITHUB_OUTPUT"
 
           # Extract API spec file URL based on spec-file-name and release_tag
-          spec_file_url=$(jq -r '.assets[] | select(.name == env.spec-file-name) | .browser_download_url' latest-release.json)
+          spec_file_url=$(jq -r '.assets[] | select(.name == "${{ env.spec-file-name }}") | .browser_download_url' latest-release.json)
           echo "spec-file-url=$spec_file_url" >> "$GITHUB_OUTPUT"
 
   download-api-spec:
