@@ -20,7 +20,7 @@ jobs:
 
     - name: Call download-api-spec workflow
       id: download-api-spec
-      uses: .github/workflows/download-api-spec.yml
+      uses: ./.github/workflows/download-api-spec.yml
 
     - name: Decode spec file content
       id: decode-spec
