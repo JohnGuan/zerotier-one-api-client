@@ -33,6 +33,8 @@ jobs:
       spec-file-name: ${{ steps.get-latest-release.outputs.spec-file-name }}
       spec-file-url: ${{ steps.get-latest-release.outputs.spec-file-url }}
     steps:
+      - uses: actions/checkout@v4
+      
       # Get the latest release tag from env.spec-repo
       - name: Get latest release
         id: get-latest-release
