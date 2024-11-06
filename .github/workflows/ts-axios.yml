@@ -12,20 +12,21 @@ env:
   generator: typescript-axios
 
 jobs:
+  download-api-spec:
+    name: Call download-api-spec
+    uses: ./.github/workflows/download-api-spec.yml
+
   main:
     name: Generate, build and publish
+    needs: download-api-spec
     runs-on: ubuntu-latest
     steps:
     - uses: actions/checkout@v4
 
-    - name: Call download-api-spec workflow
-      id: download-api-spec
-      uses: JohnGuan/zerotier-one-api-client/.github/workflows/download-api-spec.yml@main
-
     - name: Decode spec file content
       id: decode-spec
       run: |
-        echo "${{ steps.download-api-spec.outputs.spec-file-content-base64 }}" | base64 -d > ${{ steps.download-api-spec.outputs.spec-file-name }}
+        echo "${{ needs.download-api-spec.outputs.spec-file-content-base64 }}" | base64 -d > ${{ needs.download-api-spec.outputs.spec-file-name }}
     
     - name: Setup Node
       uses: actions/setup-node@v3
@@ -40,7 +41,7 @@ jobs:
     - name: Generate
       run: |
         npx openapi-generator-cli generate \
-          -i ${{ steps.download-api-spec.outputs.spec-file-name }} \
+          -i ${{ needs.download-api-spec.outputs.spec-file-name }} \
           -g ${{ env.generator }} \
           -o ${{ env.npmName }} \
           --additional-properties=npmName=${{ env.npmName }} \
