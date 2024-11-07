@@ -7,9 +7,9 @@ on:
 
 env:
   npmName: zerotier-one-client-ts-axios
+  generator: typescript-axios
   gitUserId: JohnGuan
   gitRepoId: zerotier-one-api-client
-  generator: typescript-axios
 
 jobs:
   download-api-spec:
